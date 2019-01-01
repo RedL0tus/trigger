@@ -9,10 +9,10 @@ use std::process;
 
 fn main() {
     /* Initialize logger */
-    if let Err(_) = env::var("BLOG_UPDATER_LOG") {
-        env::set_var("BLOG_UPDATER_LOG", "info");
+    if let Err(_) = env::var("TRIGGER_LOG") {
+        env::set_var("TRIGGER_LOG", "info");
     }
-    if let Err(e) = pretty_env_logger::try_init_custom_env("BLOG_UPDATER_LOG") {
+    if let Err(e) = pretty_env_logger::try_init_custom_env("TRIGGER_LOG") {
         panic!("Failed to initialize logger: {}", e);
     }
     /* Start */
