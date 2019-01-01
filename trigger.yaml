@@ -1,0 +1,9 @@
+# Sample config
+
+listen:
+  host: 0.0.0.0:9999
+  secret: your secret here
+
+events:
+  push: bash -c generate.sh
+  watch: bash -c "echo Yooooooooooooooooooo"

@@ -1,0 +1,13 @@
+[package]
+name = "trigger"
+version = "0.1.0"
+authors = ["Kay Lin <i@v2bv.net>"]
+edition = "2018"
+
+[dependencies]
+log = "~0.4"
+hyper = "~0.9"
+yaml-rust = "~0.4"
+afterparty = "~0.2"
+run_script = "~0.2"
+pretty_env_logger = "~0.3"
