@@ -90,7 +90,7 @@ pub fn start() -> Result<(), Box<Error>> {
             debug!("Payload: {:#?}", delivery);
         });
         hub.handle_authenticated("*", sec, move |delivery: &Delivery| {
-            info!("Payload authencated");
+            info!("Payload authenticated");
             if let Err(e) = process_payload(delivery, config_closure.clone()) {
                 error!("Error while processing payload: {:#?}", e);
             }
