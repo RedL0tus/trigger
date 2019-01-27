@@ -1,16 +1,21 @@
 [package]
 name = "trigger"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Kay Lin <i@v2bv.net>"]
 description = "Yet another GitHub Webhook listener"
 homepage = "https://github.com/RedL0tus/trigger"
 repository = "https://github.com/RedL0tus/trigger"
 keywords = ["github", "ci", "webhook"]
+readme = "README.md"
 edition = "2018"
 license = "MIT"
 
+[badges]
+maintenance = { status = "experimental" }
+
 [dependencies]
 log = "~0.4"
+clap = "~2.32"
 hyper = "~0.9"
 yaml-rust = "~0.4"
 afterparty = "~0.2"

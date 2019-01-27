@@ -99,7 +99,7 @@ Future Plans
 ------------
 
  - [ ] Migrate afterparty to newer version of hyper if possible.
- - [ ] Command line helper.
+ - [x] Command line helper.
 
 License and Credits
 -------------------

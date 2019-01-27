@@ -68,15 +68,15 @@ pub fn process_payload(delivery: &Delivery, config: Yaml) -> Result<(), Box<Erro
     Ok(())
 }
 
-pub fn start() -> Result<(), Box<Error>> {
+pub fn start(config: &str) -> Result<(), Box<Error>> {
     info!("Starting up...");
 
     /* Read config (from `trigger.yaml`) */
     let mut config_content = String::new();
-    let config_file = File::open("trigger.yaml")?;
+    let config_file = File::open(config)?;
     let mut buf_reader = BufReader::new(config_file);
     buf_reader.read_to_string(&mut config_content)?;
-    debug!("Got config: {}", config_content);
+    debug!("Got config:\n\"\"\"\n{}\n\"\"\"\nfrom file {}", config_content, config);
     let config= YamlLoader::load_from_str(config_content.as_str())?[0].clone();
     let config_closure = config.clone();
     debug!("Config parsed: {:?}", config);
