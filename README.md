@@ -48,26 +48,43 @@ Details
      - `secret` isn't necessary, but without it trigger won't be able to check payload's validity.
    - In `events` section:
      - Available events:
+       - check_run
+       - check_suite
        - commit_comment
+       - content_reference
        - create
        - delete
        - deployment
        - deployment_status
        - fork
        - gollum
+       - installation
+       - installation_repository
        - issue_comment
        - issues
+       - label
+       - marketplace_purchase
        - member
        - membership
+       - milestone
+       - org_block
+       - organization
        - page_build
-       - ping
+       - project
+       - project_card
+       - project_column
        - public
        - pull_request
+       - pull_request_review
        - pull_request_review_comment
        - push
        - release
        - repository
+       - repository_import
+       - repository_vulnerability_alert
+       - security_advisory
        - status
+       - team
        - team_add
        - watch
        - unknown (which may be a unreachable pattern)
@@ -98,7 +115,8 @@ WantedBy=multi-user.target
 Future Plans
 ------------
 
- - [ ] Migrate afterparty to newer version of hyper if possible.
+ - [ ] ~~Migrate afterparty to newer version of hyper if possible.~~
+   - Switched to [afterparty-ng](https://github.com/psychonautwiki/afterparty-ng).
  - [x] Command line helper.
 
 License and Credits
@@ -106,7 +124,7 @@ License and Credits
 
 This software is distributed under the terms of MIT license, for more details, please consult [LICENSE](LICENSE) file.
 
-Trigger (currently) is just a wrapper of [afterparty](https://github.com/softprops/afterparty), which is also MIT licensed.
+Trigger (currently) is just a wrapper of [afterparty-ng](https://github.com/psychonautwiki/afterparty-ng), which is also MIT licensed.
 
 Trigger uses [pretty_env_logger](https://github.com/seanmonstar/pretty-env-logger) and [log](https://github.com/rust-lang-nursery/log) to log.  
 Trigger uses [yaml-rust](https://github.com/chyh1990/yaml-rust) to parse configurations.  
