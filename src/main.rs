@@ -1,5 +1,4 @@
 #[allow(unreachable_patterns)]
-
 #[macro_use]
 extern crate log;
 extern crate pretty_env_logger;
@@ -11,7 +10,7 @@ extern crate trigger;
 use std::env;
 use std::process;
 
-use clap::{Arg, App};
+use clap::{App, Arg};
 
 fn main() {
     /* Initialize logger */
@@ -29,12 +28,14 @@ fn main() {
         .version(VERSION)
         .author(AUTHOR)
         .about(DESCRIPTION)
-        .arg(Arg::with_name("config")
-            .short("c")
-            .long("config")
-            .value_name("FILE")
-            .help("Sets a custom config path (default: trigger.yaml)")
-            .takes_value(true))
+        .arg(
+            Arg::with_name("config")
+                .short("c")
+                .long("config")
+                .value_name("FILE")
+                .help("Sets a custom config path (default: trigger.yaml)")
+                .takes_value(true),
+        )
         .after_help("This program built on top of the crate \"afterparty\".")
         .get_matches();
     let config = matches.value_of("config").unwrap_or("trigger.yaml");

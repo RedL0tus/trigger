@@ -3,7 +3,7 @@ trigger.rs
 
 [![license](https://img.shields.io/github/license/RedL0tus/trigger.svg)](LICENSE) [![crates.io](http://meritbadge.herokuapp.com/trigger)](https://crates.io/crates/trigger)
 
-Yet another GitHub Webhook listener, built using [afterparty](https://crates.io/crates/afterparty).
+Yet another GitHub Webhook listener, built with [rifling](https://crates.io/crates/rifling).
 
 Usage
 -----
@@ -70,6 +70,7 @@ Details
        - org_block
        - organization
        - page_build
+       - ping
        - project
        - project_card
        - project_column
@@ -87,7 +88,7 @@ Details
        - team
        - team_add
        - watch
-       - unknown (which may be a unreachable pattern)
+       - unknown (Events undefined in the configuration file go here)
      - Commands:
        - It's okay to use POSIX shell syntax in the commands here.
        - `{payload}` will be replaced with unparsed payload 
@@ -116,15 +117,13 @@ Future Plans
 ------------
 
  - [ ] ~~Migrate afterparty to newer version of hyper if possible.~~
-   - Switched to [afterparty-ng](https://github.com/psychonautwiki/afterparty-ng).
+   - Switched to [rifling](https://github.com/RedL0tus/rifling).
  - [x] Command line helper.
 
 License and Credits
 -------------------
 
 This software is distributed under the terms of MIT license, for more details, please consult [LICENSE](LICENSE) file.
-
-Trigger (currently) is just a wrapper of [afterparty-ng](https://github.com/psychonautwiki/afterparty-ng), which is also MIT licensed.
 
 Trigger uses [pretty_env_logger](https://github.com/seanmonstar/pretty-env-logger) and [log](https://github.com/rust-lang-nursery/log) to log.  
 Trigger uses [yaml-rust](https://github.com/chyh1990/yaml-rust) to parse configurations.  

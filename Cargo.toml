@@ -1,6 +1,6 @@
 [package]
 name = "trigger"
-version = "0.3.0"
+version = "0.4.0"
 authors = ["Kay Lin <i@v2bv.net>"]
 description = "Yet another GitHub Webhook listener"
 homepage = "https://github.com/RedL0tus/trigger"
@@ -16,8 +16,8 @@ maintenance = { status = "experimental" }
 [dependencies]
 log = "~0.4"
 clap = "~2.32"
-hyper = "~0.10"
+hyper = "~0.12"
+rifling = "~0.2"
 yaml-rust = "~0.4"
 run_script = "~0.2"
-afterparty-ng = "~0.4"
 pretty_env_logger = "~0.3"

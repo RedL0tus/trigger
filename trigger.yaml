@@ -2,7 +2,7 @@
 
 listen:
   host: 0.0.0.0:9999
-  secret: your secret here
+  secret: "yoursecrethere"
 
 events:
   push: bash -c generate.sh
