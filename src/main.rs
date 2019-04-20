@@ -1,4 +1,3 @@
-#[allow(unreachable_patterns)]
 #[macro_use]
 extern crate log;
 extern crate pretty_env_logger;
@@ -12,15 +11,17 @@ use std::process;
 
 use clap::{App, Arg};
 
+/// Main entry of the program
 fn main() {
-    /* Initialize logger */
+    // Initialize logger
     if let Err(_) = env::var("TRIGGER_LOG") {
         env::set_var("TRIGGER_LOG", "info");
     }
     if let Err(e) = pretty_env_logger::try_init_custom_env("TRIGGER_LOG") {
         panic!("Failed to initialize logger: {}", e);
     }
-    /* Start */
+
+    // Setup clap
     const VERSION: &'static str = env!("CARGO_PKG_VERSION");
     const DESCRIPTION: &'static str = env!("CARGO_PKG_DESCRIPTION");
     const AUTHOR: &'static str = env!("CARGO_PKG_AUTHORS");
@@ -38,7 +39,10 @@ fn main() {
         )
         .after_help("This program built on top of the crate \"afterparty\".")
         .get_matches();
+    // Get filename of the config file
     let config = matches.value_of("config").unwrap_or("trigger.yaml");
+
+    // Error handling!!! How to do this correctly!!!
     if let Err(e) = trigger::start(config) {
         error!("Application error: {}", e);
         process::exit(1);
