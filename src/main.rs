@@ -11,10 +11,18 @@ use std::process;
 
 use clap::{App, Arg};
 
+// Read constants from environmental variables given by cargo
+/// Version of trigger
+const VERSION: &str = env!("CARGO_PKG_VERSION");
+/// Description of trigger
+const DESCRIPTION: &str = env!("CARGO_PKG_DESCRIPTION");
+/// Author of trigger
+const AUTHOR: &str = env!("CARGO_PKG_AUTHORS");
+
 /// Main entry of the program
 fn main() {
     // Initialize logger
-    if let Err(_) = env::var("TRIGGER_LOG") {
+    if env::var("TRIGGER_LOG").is_err() {
         env::set_var("TRIGGER_LOG", "info");
     }
     if let Err(e) = pretty_env_logger::try_init_custom_env("TRIGGER_LOG") {
@@ -22,9 +30,6 @@ fn main() {
     }
 
     // Setup clap
-    const VERSION: &'static str = env!("CARGO_PKG_VERSION");
-    const DESCRIPTION: &'static str = env!("CARGO_PKG_DESCRIPTION");
-    const AUTHOR: &'static str = env!("CARGO_PKG_AUTHORS");
     let matches = App::new("trigger.rs")
         .version(VERSION)
         .author(AUTHOR)

@@ -16,6 +16,7 @@ use std::error::Error;
 use std::fs::File;
 use std::io::prelude::*;
 use std::io::BufReader;
+use std::net::SocketAddr;
 use std::thread;
 
 use hyper::rt::{run, Future};
@@ -35,42 +36,68 @@ macro_rules! get_value {
     };
 }
 
+// Some constant
+/// Name of the settings section in configuration file
+const SETTINGS: &str = "settings";
+/// Name of the events section in configuration file
+const EVENTS: &str = "events";
+/// Name of the common part inside events section in configuration file
+const EVENTS_COMMON: &str = "common";
+
 #[derive(Clone)]
+/// Handler of the deliveries
 pub struct Handler {
     config: Yaml,
 }
 
 /// Handler of the deliveries
 impl Handler {
+    /// Create a new instance from given configuration
     fn new(config: Yaml) -> Handler {
         Handler { config }
+    }
+
+    /// Prepare command from information from delivery
+    fn process_commands(&self, delivery: &Delivery) -> Option<String> {
+        let id = get_value!(&delivery.id);
+        let event = get_value!(&delivery.event);
+        info!("Received \"{}\" event with ID \"{}\"", &event, &id);
+        if let Some(command) = self.config[EVENTS][event].as_str() {
+            let mut exec = String::from(command);
+            if let Some(common_command) = self.config[EVENTS][EVENTS_COMMON].as_str() {
+                exec = format!("{}\n{}", &common_command, &exec);
+            }
+            // Replace placeholders in commands
+            exec = exec.replace("{id}", id);
+            exec = exec.replace("{event}", event);
+            exec = exec.replace("{signature}", get_value!(&delivery.signature));
+            exec = exec.replace("{payload}", get_value!(&delivery.unparsed_payload));
+            exec = exec.replace("{request_body}", get_value!(&delivery.request_body));
+            Some(exec)
+        } else {
+            None
+        }
     }
 }
 
 impl HookFunc for Handler {
     /// Handle the delivery
     fn run(&self, delivery: &Delivery) {
-        // Get properties
-        let id = get_value!(&delivery.id);
-        let event = get_value!(&delivery.event);
-        info!("Received \"{}\" event with ID \"{}\"", &event, &id);
-
         // Run the commands
-        let action: Option<&str> = self.config["events"][event].as_str();
-        if let Some(command) = action {
-            // Prepare the commands
-            let mut exec = String::from(command);
-            exec = exec.replace("{id}", id);
-            exec = exec.replace("{event}", event);
-            exec = exec.replace("{signature}", get_value!(&delivery.signature));
-            exec = exec.replace("{payload}", get_value!(&delivery.unparsed_payload));
-            exec = exec.replace("{request_body}", get_value!(&delivery.request_body));
+        if let Some(exec) = self.process_commands(&delivery) {
             // Execute the commands
-            info!("Executing command: {}", &command);
+            debug!("Parsed command: {}", &exec);
             let mut options = ScriptOptions::new();
-            options.capture_output = false;
-            options.exit_on_error = true;
-            options.print_commands = true;
+            options.capture_output = self.config[SETTINGS]["capture_output"]
+                .as_bool()
+                .unwrap_or(false);
+            options.exit_on_error = self.config[SETTINGS]["exit_on_error"]
+                .as_bool()
+                .unwrap_or(false);
+            options.print_commands = self.config[SETTINGS]["print_commands"]
+                .as_bool()
+                .unwrap_or(false);
+            debug!("Executor option: {:#?}", &options);
             let args = vec![];
             thread::spawn(move || {
                 run_script::run(&exec.as_str(), &args, &options)
@@ -101,8 +128,8 @@ pub fn start(config_filename: &str) -> Result<(), Box<Error>> {
     let config = YamlLoader::load_from_str(config_content.as_str())?[0].clone();
     debug!("Config parsed: {:?}", config);
 
-    // Parse secret
-    let secret = if let Some(secret) = config["listen"]["secret"].as_str() {
+    // Prepare secret
+    let secret = if let Some(secret) = config[SETTINGS]["secret"].as_str() {
         Some(String::from(secret))
     } else {
         None
@@ -115,13 +142,18 @@ pub fn start(config_filename: &str) -> Result<(), Box<Error>> {
     cons.register(hook);
 
     // Setup server
-    let addr = config["listen"]["host"]
+    let addr: SocketAddr = config[SETTINGS]["host"]
         .as_str()
         .expect("Unable to read host address")
         .parse()
         .expect("Unable to parse host address");
-    info!("Listening on {:?}", addr);
-
+    let ip_type = if addr.is_ipv4() { "IPv4" } else { "IPv6" };
+    info!(
+        "Listening on {} address {}:{}",
+        ip_type,
+        &addr.ip(),
+        &addr.port()
+    );
     let server = Server::bind(&addr)
         .serve(cons)
         .map_err(|e| error!("Error: {:?}", e));

@@ -15,13 +15,26 @@ Usage
  - Prepare your `trigger.yaml`  
    Example:
    ```yaml
-   listen:
-     host: 0.0.0.0:9999
-     secret: asdasdasd
-   
+   settings:
+     host: 0.0.0.0:4567
+     secret: "secret"
+     print_commands: true
+     capture_output: false
+     exit_on_error: true
+
    events:
-     push: bash -c generate.sh
-     watch: echo Yooooooooooooooooooo
+     common: |
+       set -e;
+       PAYLOAD='{payload}';
+       function get_prop {
+         echo $(echo ${PAYLOAD} | jq $1 | tr -d '"');
+       }
+       SENDER=$(get_prop '.sender.login');
+       SENDER_ID=$(get_prop '.sender.id');
+     push: echo "User \"{SENDER}\" with ID \"{SENDER_ID}\" pushed to this repository"
+     watch: |
+       ACTION=$(get_prop '.action');
+       echo "GitHub user \"${SENDER}\" with ID \"${SENDER_ID}\" ${ACTION} watching this repository";
    ```
    In this example, trigger will:
     - Bind `0.0.0.0:9999`

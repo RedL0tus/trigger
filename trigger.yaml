@@ -1,9 +1,22 @@
 # Sample config
 
-listen:
+settings:
   host: 0.0.0.0:4567
   secret: "secret"
+  print_commands: true
+  capture_output: false
+  exit_on_error: true
 
 events:
-  push: bash -c generate.sh
-  watch: bash -c "echo {event}"
+  common: |
+    set -e;
+    PAYLOAD='{payload}';
+    function get_prop {
+      echo $(echo ${PAYLOAD} | jq $1 | tr -d '"');
+    }
+    SENDER=$(get_prop '.sender.login');
+    SENDER_ID=$(get_prop '.sender.id');
+  push: echo "User \"{SENDER}\" with ID \"{SENDER_ID}\" pushed to this repository"
+  watch: |
+    ACTION=$(get_prop '.action');
+    echo "GitHub user \"${SENDER}\" with ID \"${SENDER_ID}\" ${ACTION} watching this repository";
