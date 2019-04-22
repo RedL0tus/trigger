@@ -26,6 +26,15 @@ use yaml_rust::{Yaml, YamlLoader};
 use rifling::hook::HookFunc;
 use rifling::{Constructor, Delivery, Hook};
 
+macro_rules! get_value {
+    ($source:expr) => {
+        match $source {
+            Some(string) => string.as_str(),
+            None => "unknown",
+        }
+    };
+}
+
 #[derive(Clone)]
 pub struct Handler {
     config: Yaml,
@@ -41,24 +50,22 @@ impl Handler {
 impl HookFunc for Handler {
     /// Handle the delivery
     fn run(&self, delivery: &Delivery) {
-        // Print delivery ID
-        let id = delivery.id.clone().unwrap_or("unknown".into());
-
-        // Get event
-        let event = delivery.event.clone().unwrap_or("unknown".into());
-
+        // Get properties
+        let id = get_value!(&delivery.id);
+        let event = get_value!(&delivery.event);
         info!("Received \"{}\" event with ID \"{}\"", &event, &id);
 
         // Run the commands
-        let action: Option<&str> = self.config["events"][event.as_str()].as_str();
+        let action: Option<&str> = self.config["events"][event].as_str();
         if let Some(command) = action {
-            // Get body of the payload
-            let payload = &delivery
-                .unparsed_payload
-                .clone()
-                .unwrap_or("unknown".into());
+            // Prepare the commands
+            let mut exec = String::from(command);
+            exec = exec.replace("{id}", id);
+            exec = exec.replace("{event}", event);
+            exec = exec.replace("{signature}", get_value!(&delivery.signature));
+            exec = exec.replace("{payload}", get_value!(&delivery.unparsed_payload));
+            exec = exec.replace("{request_body}", get_value!(&delivery.request_body));
             // Execute the commands
-            let exec = command.replace("{payload}", payload);
             info!("Executing command: {}", &command);
             let mut options = ScriptOptions::new();
             options.capture_output = false;
@@ -96,7 +103,7 @@ pub fn start(config_filename: &str) -> Result<(), Box<Error>> {
 
     // Parse secret
     let secret = if let Some(secret) = config["listen"]["secret"].as_str() {
-        Some(String::from(secret.clone()))
+        Some(String::from(secret))
     } else {
         None
     };

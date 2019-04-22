@@ -1,9 +1,9 @@
 # Sample config
 
 listen:
-  host: 0.0.0.0:9999
-  secret: "yoursecrethere"
+  host: 0.0.0.0:4567
+  secret: "secret"
 
 events:
   push: bash -c generate.sh
-  watch: bash -c "echo Yooooooooooooooooooo"
+  watch: bash -c "echo {event}"
