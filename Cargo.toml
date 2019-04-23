@@ -12,9 +12,7 @@ edition = "2018"
 license = "MIT"
 
 [badges]
-maintenance = { status = "experimental" }
 travis-ci = { repository = "RedL0tus/trigger", branch = "master" }
-coveralls = { repository = "RedL0tus/trigger", branch = "master" }
 
 [dependencies]
 log = "~0.4"

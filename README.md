@@ -4,7 +4,6 @@ trigger.rs
 [![license](https://img.shields.io/github/license/RedL0tus/trigger.svg)](LICENSE)
 [![crates.io](http://meritbadge.herokuapp.com/trigger)](https://crates.io/crates/trigger)
 [![Travis-CI](https://travis-ci.org/RedL0tus/trigger.svg?branch=master)](https://travis-ci.org/RedL0tus/trigger)
-[![Coverage Status](https://coveralls.io/repos/github/RedL0tus/trigger/badge.svg?branch=master)](https://coveralls.io/github/RedL0tus/trigger?branch=master)
 
 Yet another GitHub Webhook listener, built with [rifling](https://crates.io/crates/rifling).
 
