@@ -54,17 +54,19 @@ events:
     }
     SENDER=$(get_prop '.sender.login');
     SENDER_ID=$(get_prop '.sender.id');
-  push: echo "User \"{SENDER}\" with ID \"{SENDER_ID}\" pushed to this repository"
+  all: echo "This command will be executed in all the events, the current event is {event}";
+  push: echo "User \"{SENDER}\" with ID \"{SENDER_ID}\" pushed to this repository";
   watch: |
     ACTION=$(get_prop '.action');
     echo "GitHub user \"${SENDER}\" with ID \"${SENDER_ID}\" ${ACTION} watching this repository";
-  else: echo "\"${SENDER}\" with ID \"${SENDER_ID}\" sent {event} event"
+  else: echo "\"${SENDER}\" with ID \"${SENDER_ID}\" sent {event} event";
 ```
 
  - Secret is not required, but it's strongly recommended.
- - Commands in `events.common` are going to be executed before the actual event.
+ - Commands in `events.common` will be executed before the actual event.
+ - Commands in `events.all` will be executed in all 
  - All available events are listed [here](https://developer.github.com/webhooks/#events).
- - Commands in `events.else` are going to be executed when no matching event defined.
+ - Commands in `events.else` will be executed when no matching event defined.
  - Placeholder `{payload}` in commands will be replaced with unparsed payload.
    - Please use single quotation mark to wrap around it.
    - It is possible to use jq to parse it if needed.

@@ -16,8 +16,9 @@ events:
     }
     SENDER=$(get_prop '.sender.login');
     SENDER_ID=$(get_prop '.sender.id');
-  push: echo "User \"{SENDER}\" with ID \"{SENDER_ID}\" pushed to this repository"
+  all: echo "This command will be executed in all the events, the current event is {event}";
+  push: echo "User \"{SENDER}\" with ID \"{SENDER_ID}\" pushed to this repository";
   watch: |
     ACTION=$(get_prop '.action');
     echo "GitHub user \"${SENDER}\" with ID \"${SENDER_ID}\" ${ACTION} watching this repository";
-  else: echo "\"${SENDER}\" with ID \"${SENDER_ID}\" sent {event} event"
+  else: echo "\"${SENDER}\" with ID \"${SENDER_ID}\" sent {event} event";

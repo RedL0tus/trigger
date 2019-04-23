@@ -12,6 +12,7 @@ extern crate rifling;
 // Run shell commands
 extern crate run_script;
 
+use std::collections::HashMap;
 use std::error::Error;
 use std::fs::File;
 use std::io::prelude::*;
@@ -45,6 +46,8 @@ const EVENTS: &str = "events";
 const EVENTS_COMMON: &str = "common";
 /// Name of the `else` part inside events section in configuration file
 const EVENTS_ELSE: &str = "else";
+/// Name of the `all` part inside events section in configuration file
+const EVENTS_ALL: &str = "all";
 
 #[derive(Clone)]
 /// Handler of the deliveries
@@ -86,35 +89,49 @@ impl HookFunc for Handler {
         info!("Received \"{}\" event with ID \"{}\"", &event, &id);
 
         // Prepare the commands
-        let mut commands = self.process_commands(event, &delivery);
-        if commands.is_none() {
-            commands = self.process_commands(EVENTS_ELSE, &delivery);
+        let mut commands_all: HashMap<String, Option<String>> = HashMap::new();
+
+        // Prepare commands in `all` section
+        commands_all.insert(
+            EVENTS_ALL.into(),
+            self.process_commands(EVENTS_ALL, &delivery),
+        );
+
+        // Prepare commands matching the event
+        if let Some(command) = self.process_commands(event, &delivery) {
+            commands_all.insert(event.into(), Some(command));
+        } else {
+            commands_all.insert(
+                EVENTS_ELSE.into(),
+                self.process_commands(EVENTS_ELSE, &delivery),
+            );
         }
 
         // Execute the commands
-        if let Some(exec) = commands {
-            debug!("Parsed command: {}", &exec);
-            let mut options = ScriptOptions::new();
-            options.capture_output = self.config[SETTINGS]["capture_output"]
-                .as_bool()
-                .unwrap_or(false);
-            options.exit_on_error = self.config[SETTINGS]["exit_on_error"]
-                .as_bool()
-                .unwrap_or(false);
-            options.print_commands = self.config[SETTINGS]["print_commands"]
-                .as_bool()
-                .unwrap_or(false);
-            debug!("Executor option: {:#?}", &options);
-            let args = vec![];
-            thread::spawn(move || {
-                run_script::run(&exec.as_str(), &args, &options)
-                    .expect("Failed to execute command");
-                info!("Command exited");
-            });
-            info!("Returning 200");
-        } else {
-            info!("Not configured for this event, ignoring");
+        for (section_name, command) in commands_all {
+            if let Some(exec) = command {
+                info!("Running commands in \"{}\" section", event);
+                debug!("Parsed command: {}", &exec);
+                let mut options = ScriptOptions::new();
+                options.capture_output = self.config[SETTINGS]["capture_output"]
+                    .as_bool()
+                    .unwrap_or(false);
+                options.exit_on_error = self.config[SETTINGS]["exit_on_error"]
+                    .as_bool()
+                    .unwrap_or(false);
+                options.print_commands = self.config[SETTINGS]["print_commands"]
+                    .as_bool()
+                    .unwrap_or(false);
+                debug!("Executor option: {:#?}", &options);
+                let args = vec![];
+                thread::spawn(move || {
+                    run_script::run(&exec.as_str(), &args, &options)
+                        .expect("Failed to execute command");
+                    info!("Commands in \"{}\" section exited", &section_name);
+                });
+            }
         }
+        info!("Returning 200");
     }
 }
 
