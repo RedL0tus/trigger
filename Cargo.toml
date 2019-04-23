@@ -6,12 +6,15 @@ description = "Yet another GitHub Webhook listener"
 homepage = "https://github.com/RedL0tus/trigger"
 repository = "https://github.com/RedL0tus/trigger"
 keywords = ["github", "ci", "webhook"]
+categories = ["command-line-utilities", "web-programming::http-server"]
 readme = "README.md"
 edition = "2018"
 license = "MIT"
 
 [badges]
 maintenance = { status = "experimental" }
+travis-ci = { repository = "RedL0tus/trigger", branch = "master" }
+coveralls = { repository = "RedL0tus/trigger", branch = "master" }
 
 [dependencies]
 log = "~0.4"
