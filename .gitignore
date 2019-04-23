@@ -1,4 +1,5 @@
 /target
 **/*.rs.bk
+Cargo.lock
 blog-updater.iml
 .idea
