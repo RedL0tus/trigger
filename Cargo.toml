@@ -15,7 +15,7 @@ maintenance = { status = "experimental" }
 
 [dependencies]
 log = "~0.4"
-clap = "~2.32"
+clap = { version = "~2.33", default-features = false, features = [] }
 hyper = "~0.12"
 rifling = { version = "~0.3", default-features = false, features = ["hyper-support", "crypto-use-rustcrypto"] }
 yaml-rust = "~0.4"
@@ -23,7 +23,10 @@ run_script = "~0.2"
 pretty_env_logger = "~0.3"
 
 [profile.release]
-opt-level = 'z'
 lto = true
-codegen-units = 1
+debug = false
 panic = 'abort'
+rpath = false
+opt-level = 'z'
+codegen-units = 1
+debug-assertions = false
