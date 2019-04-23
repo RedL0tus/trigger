@@ -28,6 +28,7 @@ use yaml_rust::{Yaml, YamlLoader};
 use rifling::hook::HookFunc;
 use rifling::{Constructor, Delivery, Hook};
 
+/// Get values inside Option<T>
 macro_rules! get_value {
     ($source:expr) => {
         match $source {
@@ -137,7 +138,7 @@ impl HookFunc for Handler {
 
 /// Start the server from given config file path
 pub fn start(config_filename: &str) -> Result<(), Box<Error>> {
-    info!("Starting up...");
+    debug!("Setting up...");
 
     // Read config (from `trigger.yaml`)
     let mut config_content = String::new();
@@ -149,7 +150,7 @@ pub fn start(config_filename: &str) -> Result<(), Box<Error>> {
         config_content, config_filename
     );
 
-    let config = YamlLoader::load_from_str(config_content.as_str())?[0].clone();
+    let config = &YamlLoader::load_from_str(config_content.as_str())?[0];
     debug!("Config parsed: {:?}", config);
 
     // Prepare secret
@@ -186,4 +187,58 @@ pub fn start(config_filename: &str) -> Result<(), Box<Error>> {
     // Link start!
     run(server);
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use rifling::handler::ContentType;
+
+    #[test]
+    fn command_generation() {
+        let test_config = r#"
+settings:
+  host: 0.0.0.0:4567
+  secret: "secret"
+
+events:
+  common: common
+  all: all
+  push: push
+  else: else
+"#;
+        let config = &YamlLoader::load_from_str(test_config).unwrap()[0];
+        let handler = Handler::new(config.clone());
+        let delivery = Delivery::new(
+            Some(String::from("unknown")),
+            Some(String::from("push")),
+            None,
+            ContentType::JSON,
+            Some(String::from(r#"{ zen: "test" }"#))
+        );
+        let result_all = handler.process_commands(EVENTS_ALL, &delivery);
+        assert_eq!(
+            "\
+common
+all\
+            ",
+            result_all.unwrap().as_str()
+        );
+        let result_push = handler.process_commands("push", &delivery);
+        assert_eq!(
+            "\
+common
+push\
+            ",
+            result_push.unwrap().as_str()
+        );
+        let result_else = handler.process_commands(EVENTS_ELSE, &delivery);
+        assert_eq!(
+            "\
+common
+else\
+            ",
+            result_else.unwrap().as_str()
+        );
+    }
 }
