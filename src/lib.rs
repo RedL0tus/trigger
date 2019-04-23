@@ -43,6 +43,8 @@ const SETTINGS: &str = "settings";
 const EVENTS: &str = "events";
 /// Name of the common part inside events section in configuration file
 const EVENTS_COMMON: &str = "common";
+/// Name of the `else` part inside events section in configuration file
+const EVENTS_ELSE: &str = "else";
 
 #[derive(Clone)]
 /// Handler of the deliveries
@@ -57,19 +59,15 @@ impl Handler {
         Handler { config }
     }
 
-    /// Prepare command from information from delivery
-    fn process_commands(&self, delivery: &Delivery) -> Option<String> {
-        let id = get_value!(&delivery.id);
-        let event = get_value!(&delivery.event);
-        info!("Received \"{}\" event with ID \"{}\"", &event, &id);
+    /// Prepare command from information of the delivery
+    fn process_commands(&self, event: &str, delivery: &Delivery) -> Option<String> {
+        let common_command = self.config[EVENTS][EVENTS_COMMON].as_str().unwrap_or("");
         if let Some(command) = self.config[EVENTS][event].as_str() {
             let mut exec = String::from(command);
-            if let Some(common_command) = self.config[EVENTS][EVENTS_COMMON].as_str() {
-                exec = format!("{}\n{}", &common_command, &exec);
-            }
+            exec = format!("{}\n{}", &common_command, &exec);
             // Replace placeholders in commands
-            exec = exec.replace("{id}", id);
-            exec = exec.replace("{event}", event);
+            exec = exec.replace("{id}", get_value!(&delivery.id));
+            exec = exec.replace("{event}", get_value!(&delivery.event));
             exec = exec.replace("{signature}", get_value!(&delivery.signature));
             exec = exec.replace("{payload}", get_value!(&delivery.unparsed_payload));
             exec = exec.replace("{request_body}", get_value!(&delivery.request_body));
@@ -83,9 +81,18 @@ impl Handler {
 impl HookFunc for Handler {
     /// Handle the delivery
     fn run(&self, delivery: &Delivery) {
-        // Run the commands
-        if let Some(exec) = self.process_commands(&delivery) {
-            // Execute the commands
+        let id = get_value!(&delivery.id);
+        let event = get_value!(&delivery.event);
+        info!("Received \"{}\" event with ID \"{}\"", &event, &id);
+
+        // Prepare the commands
+        let mut commands = self.process_commands(event, &delivery);
+        if commands.is_none() {
+            commands = self.process_commands(EVENTS_ELSE, &delivery);
+        }
+
+        // Execute the commands
+        if let Some(exec) = commands {
             debug!("Parsed command: {}", &exec);
             let mut options = ScriptOptions::new();
             options.capture_output = self.config[SETTINGS]["capture_output"]
@@ -104,10 +111,10 @@ impl HookFunc for Handler {
                     .expect("Failed to execute command");
                 info!("Command exited");
             });
+            info!("Returning 200");
         } else {
             info!("Not configured for this event, ignoring");
         }
-        info!("Returning 200");
     }
 }
 

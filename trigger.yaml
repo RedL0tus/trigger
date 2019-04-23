@@ -3,7 +3,7 @@
 settings:
   host: 0.0.0.0:4567
   secret: "secret"
-  print_commands: true
+  print_commands: false
   capture_output: false
   exit_on_error: true
 
@@ -20,3 +20,4 @@ events:
   watch: |
     ACTION=$(get_prop '.action');
     echo "GitHub user \"${SENDER}\" with ID \"${SENDER_ID}\" ${ACTION} watching this repository";
+  else: echo "\"${SENDER}\" with ID \"${SENDER_ID}\" sent {event} event"
