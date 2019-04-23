@@ -6,4 +6,4 @@ rust:
 cache: cargo
 script:
   - cargo check --all
-  - cargo clippy --all
+  - cargo test --all
