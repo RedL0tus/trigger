@@ -42,7 +42,7 @@ fn main() {
                 .help("Sets a custom config path (default: trigger.yaml)")
                 .takes_value(true),
         )
-        .after_help("This program built on top of the crate \"afterparty\".")
+        .after_help("This program built on top of the crate \"rifling\".")
         .get_matches();
     // Get filename of the config file
     let config = matches.value_of("config").unwrap_or("trigger.yaml");

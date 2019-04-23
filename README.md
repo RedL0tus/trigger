@@ -5,110 +5,86 @@ trigger.rs
 
 Yet another GitHub Webhook listener, built with [rifling](https://crates.io/crates/rifling).
 
-Usage
------
+Install
+-------
 
- - Install
+ - Use `cargo`:
    ```bash
    cargo install trigger
    ```
- - Prepare your `trigger.yaml`  
-   Example:
-   ```yaml
-   settings:
-     host: 0.0.0.0:4567
-     secret: "secret"
-     print_commands: true
-     capture_output: false
-     exit_on_error: true
 
-   events:
-     common: |
-       set -e;
-       PAYLOAD='{payload}';
-       function get_prop {
-         echo $(echo ${PAYLOAD} | jq $1 | tr -d '"');
-       }
-       SENDER=$(get_prop '.sender.login');
-       SENDER_ID=$(get_prop '.sender.id');
-     push: echo "User \"{SENDER}\" with ID \"{SENDER_ID}\" pushed to this repository"
-     watch: |
-       ACTION=$(get_prop '.action');
-       echo "GitHub user \"${SENDER}\" with ID \"${SENDER_ID}\" ${ACTION} watching this repository";
-   ```
-   In this example, trigger will:
-    - Bind `0.0.0.0:9999`
-    - Execute `bash -c generate` after receiving a valid payload with secret `asdasdasd` and event `push`.
-    - Echo `Yooooooooooooooooooo` after receiving a valid payload with event `watch`.
- - Prepare reverse proxy, for example, nginx:
-   ```
-   location /hook {
-       proxy_pass http://0.0.0.0:9999/;
-   }
-   ```
-   Note: It's always recommended to use a reverse proxy.
- - Start trigger
- ```bash
- trigger
- ```
- - And that's it.
- 
-Details
--------
+ - Download binary from [GitHub release](https://github.com/RedL0tus/trigger/releases), and move it to your `PATH`.
 
- - In `trigger.yaml`:
-   - In `listen` section:
-     - `secret` isn't necessary, but without it trigger won't be able to check payload's validity.
-   - In `events` section:
-     - Available events:
-       - check_run
-       - check_suite
-       - commit_comment
-       - content_reference
-       - create
-       - delete
-       - deployment
-       - deployment_status
-       - fork
-       - gollum
-       - installation
-       - installation_repository
-       - issue_comment
-       - issues
-       - label
-       - marketplace_purchase
-       - member
-       - membership
-       - milestone
-       - org_block
-       - organization
-       - page_build
-       - ping
-       - project
-       - project_card
-       - project_column
-       - public
-       - pull_request
-       - pull_request_review
-       - pull_request_review_comment
-       - push
-       - release
-       - repository
-       - repository_import
-       - repository_vulnerability_alert
-       - security_advisory
-       - status
-       - team
-       - team_add
-       - watch
-       - unknown (Events undefined in the configuration file go here)
-     - Commands:
-       - It's okay to use POSIX shell syntax in the commands here.
-       - `{payload}` will be replaced with unparsed payload 
+Usage
+-----
+
+Commandline help:
+```bash
+trigger --help
+```
+
+Start the program
+```bash
+trigger "<path to config file>"
+```
+
+Configuration
+-------------
+
+Trigger's configurations are in YAML format.
+
+Example:
+
+```yaml
+# Sample config
+
+settings:
+  host: 0.0.0.0:4567    # Host address trigger is going to listen
+  secret: "secret"      # Secret used to authenticate payload (Optional)
+  print_commands: false # Print command or not (Optional, default: false)
+  capture_output: false # Capture output of the commands (Optional, default: false)
+  exit_on_error: true   # Exit on error in commands (Optional, default: false)
+
+events:
+  common: |
+    set -e;
+    PAYLOAD='{payload}';
+    function get_prop {
+      echo $(echo ${PAYLOAD} | jq $1 | tr -d '"');
+    }
+    SENDER=$(get_prop '.sender.login');
+    SENDER_ID=$(get_prop '.sender.id');
+  push: echo "User \"{SENDER}\" with ID \"{SENDER_ID}\" pushed to this repository"
+  watch: |
+    ACTION=$(get_prop '.action');
+    echo "GitHub user \"${SENDER}\" with ID \"${SENDER_ID}\" ${ACTION} watching this repository";
+  else: echo "\"${SENDER}\" with ID \"${SENDER_ID}\" sent {event} event"
+```
+
+ - Secret is not required, but it's strongly recommended.
+ - Commands in `events.common` are going to be executed before the actual event.
+ - All available events are listed [here](https://developer.github.com/webhooks/#events).
+ - Commands in `events.else` are going to be executed when no matching event defined.
+ - Placeholder `{payload}` in commands will be replaced with unparsed payload.
+   - Please use single quotation mark to wrap around it.
+   - It is possible to use jq to parse it if needed.
+ - Other placeholders (if not included in the delivery, they will be replaced with `unknown`):
+   - `{id}` will be replaced with ID of the event(UUID).
+   - `{event}` will be replaced with type of the event.
+   - `{signature}` will be replaced with signature of the payload.
+   - `{request_body}` will be replaced with body of the request.
+
+
+It is also recommended to use it with a reverse proxy, such as nginx:
+```nginx
+location /hook {
+    proxy_pass http://0.0.0.0:9999/;
+}
+```
+
        
 Other Snippets
 --------------
-
 Systemd unit (`trigger.service`):
 ```systemd
 [Unit]
@@ -117,21 +93,18 @@ After=network-online.target
 
 [Service]
 Type=simple
-WorkingDirectory=/path/to/your/config/file
-ExecStart=/path/to/trigger
+WorkingDirectory=/path/to/your/config/
+ExecStart=/path/to/trigger /path/to/your/config/file.yaml
 Restart=always
 RestartSec=3
 
 [Install]
 WantedBy=multi-user.target
+
+# 　ｓｙ
+# ｓｔｅ
+# ｍｄ
 ```
-
-Future Plans
-------------
-
- - [ ] ~~Migrate afterparty to newer version of hyper if possible.~~
-   - Switched to [rifling](https://github.com/RedL0tus/rifling).
- - [x] Command line helper.
 
 License and Credits
 -------------------
