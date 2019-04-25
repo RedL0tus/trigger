@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.1.1
+-----
+
+ - Update help messages
+
 1.1.0
 -----
 
