@@ -5,7 +5,11 @@ trigger.rs
 [![crates.io](http://meritbadge.herokuapp.com/trigger)](https://crates.io/crates/trigger)
 [![Travis-CI](https://travis-ci.org/RedL0tus/trigger.svg?branch=master)](https://travis-ci.org/RedL0tus/trigger)
 
-Yet another GitHub/GitLab Webhook listener, built with [rifling](https://crates.io/crates/rifling).
+**English(Chinglish)**, [简体中文](README-zh_CN.md)
+
+Yet another GitHub/GitLab Webhook listener, run shell commands with the events received from GitHub/GitLab. 
+
+Built with [rifling](https://crates.io/crates/rifling).
 
 Install
 -------
@@ -15,7 +19,7 @@ Install
    cargo install trigger
    ```
 
- - Download binary from [GitHub release](https://github.com/RedL0tus/trigger/releases), and move it to your `PATH`.
+ - Download binary (currently Linux only) from [GitHub release](https://github.com/RedL0tus/trigger/releases), and move it to your `PATH`.
 
 Usage
 -----
@@ -66,8 +70,8 @@ events:
 
  - Secret is not required, but it's strongly recommended.
  - Commands in `events.common` will be executed before the actual event.
- - Commands in `events.all` will be executed in all 
- - All available events are listed [here](https://developer.github.com/webhooks/#events) and [here](https://docs.gitlab.com/ee/user/project/integrations/webhooks.html#events).
+ - Commands in `events.all` will be executed after receiving any valid request.
+ - All available events are listed [here (GitHub)](https://developer.github.com/webhooks/#events) and [here (GitLab)](https://docs.gitlab.com/ee/user/project/integrations/webhooks.html#events).
    - Note: Events from GitLab need to be reformatted as replacing `" "`(whitespaces) with `"_"`(underscore) and make sure it's in lower case.
      - e.g. `Push Hook` in GitLab's documentation will be `push_hook` in trigger's configuration.
  - Commands in `events.else` will be executed when no matching event defined.
@@ -75,10 +79,10 @@ events:
    - Please use single quotation mark to wrap around it.
    - It is possible to use jq to parse it if needed.
  - Other placeholders (if not included in the delivery, they will be replaced with `unknown`):
-   - `{id}` will be replaced with ID of the event(UUID).
+   - `{id}` will be replaced with UUID of the event (GitHub only, GitLab does not provide this).
    - `{event}` will be replaced with type of the event.
    - `{signature}` will be replaced with signature of the payload.
-   - `{request_body}` will be replaced with body of the request.
+   - `{request_body}` will be replaced with body of the request ().
 
 
 It is also recommended to use it with a reverse proxy, such as nginx:

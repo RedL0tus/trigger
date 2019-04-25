@@ -30,7 +30,7 @@ fn main() {
     }
 
     // Setup clap
-    let matches = App::new("trigger.rs")
+    let matches = App::new("trigger")
         .version(VERSION)
         .author(AUTHOR)
         .about(DESCRIPTION)
