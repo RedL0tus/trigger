@@ -31,7 +31,7 @@ trigger --help
 
 Start the program
 ```bash
-trigger "<path to config file>"
+trigger --config "<path to config file>"
 ```
 
 Configuration

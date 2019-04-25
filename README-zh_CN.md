@@ -50,7 +50,7 @@ OPTIONS:
 
 启动 trigger：
 ```bash
-trigger "<配置文件的路径>"
+trigger --config "<配置文件的路径>"
 ```
 
 配置
