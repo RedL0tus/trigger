@@ -26,7 +26,7 @@ use run_script::ScriptOptions;
 use yaml_rust::{Yaml, YamlLoader};
 
 use rifling::hook::HookFunc;
-use rifling::{Constructor, Delivery, Hook};
+use rifling::{Constructor, Delivery, DeliveryType, Hook};
 
 /// Get values inside Option<T>
 macro_rules! get_value {
@@ -70,6 +70,10 @@ impl Handler {
             let mut exec = String::from(command);
             exec = format!("{}\n{}", &common_command, &exec);
             // Replace placeholders in commands
+            exec = exec.replace(
+                "{source}",
+                format!("{:?}", &delivery.delivery_type).as_str(),
+            );
             exec = exec.replace("{id}", get_value!(&delivery.id));
             exec = exec.replace("{event}", get_value!(&delivery.event));
             exec = exec.replace("{signature}", get_value!(&delivery.signature));
@@ -85,10 +89,23 @@ impl Handler {
 impl HookFunc for Handler {
     /// Handle the delivery
     fn run(&self, delivery: &Delivery) {
-        let id = get_value!(&delivery.id);
         let event = get_value!(&delivery.event);
-        info!("Received \"{}\" event with ID \"{}\"", &event, &id);
-
+        info!(
+            "Received \"{}\" event from {:?}",
+            &event, &delivery.delivery_type
+        );
+        match &delivery.delivery_type {
+            DeliveryType::GitHub => {
+                let id = get_value!(&delivery.id);
+                info!("Delivery ID: \"{}\"", id);
+            }
+            _ => {
+                info!(
+                    "Delivery ID not available for requests from {:?}",
+                    &delivery.delivery_type
+                );
+            }
+        }
         // Prepare the commands
         let mut commands_all: HashMap<String, Option<String>> = HashMap::new();
 
@@ -111,7 +128,7 @@ impl HookFunc for Handler {
         // Execute the commands
         for (section_name, command) in commands_all {
             if let Some(exec) = command {
-                info!("Running commands in \"{}\" section", event);
+                info!("Running commands in \"{}\" section", &section_name);
                 debug!("Parsed command: {}", &exec);
                 let mut options = ScriptOptions::new();
                 options.capture_output = self.config[SETTINGS]["capture_output"]
@@ -193,6 +210,7 @@ pub fn start(config_filename: &str) -> Result<(), Box<Error>> {
 mod tests {
     use super::*;
     use rifling::handler::ContentType;
+    use rifling::handler::DeliveryType;
 
     #[test]
     fn command_generation() {
@@ -210,11 +228,12 @@ events:
         let config = &YamlLoader::load_from_str(test_config).unwrap()[0];
         let handler = Handler::new(config.clone());
         let delivery = Delivery::new(
+            DeliveryType::GitHub,
             Some(String::from("unknown")),
             Some(String::from("push")),
             None,
             ContentType::JSON,
-            Some(String::from(r#"{ zen: "test" }"#))
+            Some(String::from(r#"{ zen: "test" }"#)),
         );
         let result_all = handler.process_commands(EVENTS_ALL, &delivery);
         assert_eq!(
