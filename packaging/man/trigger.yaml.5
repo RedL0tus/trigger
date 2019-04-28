@@ -1,0 +1,44 @@
+.TH "TRIGGER" "5" "" "" "trigger.yaml"
+.SH NAME
+trigger.yaml \- Trigger configuration
+.SH SYNOPSIS
+.PP
+\fItrigger\fR\&.yaml
+.PP
+Configuration for trigger in YAML format,
+encodes information of how to validate received events and run what commands after that.
+.PP
+Please visit \fBtrigger\fR(1) or run 
+\fItrigger\fR \-\-help 
+for commandline help.
+.PP
+.SH OPTIONS
+.SS Settings block starts with \fB"settings:"\fR
+.PP
+\fB"host:"\fR \- Socket address that trigger is going to listen.
+.PP
+\fB"secret:"\fR \- Optional but recommended, the secret for validating the requests.
+.PP
+\fB"print_commands"\fR \- Print the commands while executing or not, default to false.
+.PP
+\fB"capture_output"\fR \- Capture the output of the commands or not, default to false.
+.PP
+\fB"exit_on_error"\fR \- Equivalent to \fBset -e\fR in shell scripts, default to false.
+.PP
+.SS Commands need to be written in the \fB"events:"\fR block:
+.PP
+\fB"common:"\fR \- Commands listed in this section will be prepended to all the other events.
+Common functions can be written here.
+.PP
+\fB"else:"\fR \- Commands here will be executed when the receiving event doesn't find a match in the rest parts of this block.
+Just like a \fIelse\fR clause in programming languages.
+.PP
+Rest of the available events are listed in documentation of GitHub and GitLab.
+.PP
+See \fIhttps://developer.github.com/webhooks/#events\fR
+and
+\fIhttps://docs.gitlab.com/ee/user/project/integrations/webhooks.html#events\fR
+.SH SEE ALSO
+Example configuration: https://github.com/RedL0tus/trigger/blob/master/trigger.yaml
+.PP
+Commandline help: \fBtrigger\fR(1)

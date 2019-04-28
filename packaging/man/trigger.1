@@ -1,0 +1,22 @@
+.TH "TRIGGER" "5" "" "" "trigger"
+.SH NAME
+trigger \- Yet another GitHub/GitLab webhook handler.
+.SH SYNOPSIS
+.B trigger
+[\fB\-c\fR \fICONFIG_FILE\fR]
+[\fB\-\-config\fR \fICONFIG_FILE\fR]
+[\fB\-V\fR]
+[\fB\-\-version\fR]
+.SH DESCRIPTION
+.B trigger
+runs shell script after receiving valid events from GitHub/GitLab.
+.SH OPTIONS
+.TP
+.BR \-n "," \-\-config =\fICONFIG_FILE\fR
+Path to the configuration file.
+Default is "trigger.yaml".
+.TP
+.BR \-V "," \-\-version
+Prints the version of trigger
+.SH SEE ALSO
+Configuration file format: \fBtrigger.yaml\fR(5)
