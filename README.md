@@ -92,6 +92,21 @@ location /hook {
 }
 ```
 
+Docker
+------
+
+1. To use trigger with docker, pull the image first:
+    ```bash
+    docker pull kaymw/trigger
+    ```
+2. Prepare your configuration as mentioned above.
+3. Start the container
+    ```bash
+    docker run --volume $PWD:/work trigger trigger --config trigger.yaml
+    ```
+Note: In this docker image, trigger's default working directory is `/work`, and the default port is `4567`.
+
+Credit: @musnow
        
 Other Snippets
 --------------

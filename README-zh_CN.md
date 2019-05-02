@@ -109,6 +109,22 @@ location /hook {
 }
 ```
 
+Docker
+------
+
+1. 如果要在 Docker 中使用 trigger，先从 Docker Hub 获取镜像：
+    ```bash
+    docker pull kaymw/trigger
+    ```
+2. 像正常情况那样准备配置文件。
+3. 启动容器：
+    ```bash
+    docker run --volume $PWD:/work trigger trigger --config trigger.yaml
+    ```
+注意：这个 Docker 镜像的默认工作路径是 `/work`，默认端口为 `4567`，建议使用逆向代理程序代理。
+
+感谢: @musnow
+
        
 其它 Snippets
 -------------
