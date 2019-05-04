@@ -67,6 +67,7 @@ settings:
   print_commands: false # 是否打印命令（可选，默认为否）
   capture_output: false # 是否捕捉命令的输出（可选，默认为否）
   exit_on_error: true   # 是否在命令出错时退出（可选，命令为否）
+  kotomei: true         # 是否提醒你去提醒 @kotomei 去准备考试（可选，默认为是）
 
 events:
   common: |

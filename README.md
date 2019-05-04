@@ -50,6 +50,7 @@ settings:
   print_commands: false # Print command or not (Optional, default: false)
   capture_output: false # Capture output of the commands (Optional, default: false)
   exit_on_error: true   # Exit on error in commands (Optional, default: false)
+  kotomei: true         # Warn you about letting @kotomei study for his exam or not (Optional, default: true)
 
 events:
   common: |

@@ -41,6 +41,8 @@ macro_rules! get_value {
 // Some constant
 /// Name of the settings section in configuration file
 const SETTINGS: &str = "settings";
+/// Name of the field that let trigger to warn you about @kotomei2 or not
+const KOTOMEI: &str = "kotomei";
 /// Name of the events section in configuration file
 const EVENTS: &str = "events";
 /// Name of the common part inside events section in configuration file
@@ -176,6 +178,10 @@ pub fn start(config_filename: &str) -> Result<(), Box<Error>> {
     } else {
         None
     };
+
+    if config[SETTINGS][KOTOMEI].as_bool().unwrap_or(true) {
+        warn!("If you ever see @kotomei2, tell him to study for the exam!");
+    }
 
     // Setup handler
     let handler = Handler::new(config.clone());
