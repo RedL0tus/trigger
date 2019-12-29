@@ -6,11 +6,11 @@ on:
     - 'v*'
 
 jobs:
-  job_create-release:
+  job_build-linux-x86_64: # Build binary for linux and create release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - name: Create release
+    - uses: actions/checkout@v1
+    - name: Create release
         id: step_create-release
         uses: actions/create-release@v1
         env:
@@ -22,10 +22,6 @@ jobs:
             This release is created by GitHub Actions automatically.
           draft: false
           prerelease: false
-  job_build-linux-x86_64: # Build binary for linux and create release
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v1
     - name: Install linux-x86_64 toolchains
       uses: actions-rs/toolchain@v1
       with: 
@@ -41,7 +37,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ jobs.job_create-release.steps.step_create-release.outputs.upload_url }}
+        upload_url: ${{ steps.step_create-release.outputs.upload_url }}
         asset_path: ./trigger-linux-x86_64
         asset_name: trigger-linux-x86_64
         asset_content_type: application/octet-stream
@@ -60,7 +56,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ jobs.job_create-release.steps.step_create-release.outputs.upload_url }}
+        upload_url: ${{ steps.step_create-release.outputs.upload_url }}
         asset_path: ./trigger-linux-i686
         asset_name: trigger-linux-i686
         asset_content_type: application/octet-stream
