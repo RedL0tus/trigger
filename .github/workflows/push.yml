@@ -11,17 +11,17 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Create release
-        id: create-release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: v${{ github.ref }}
-          body: |
-            This release is created by GitHub Actions automatically.
-          draft: false
-          prerelease: false
+      id: create-release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: v${{ github.ref }}
+        body: |
+          This release is created by GitHub Actions automatically.
+        draft: false
+        prerelease: false
     - name: Install linux-x86_64 toolchains
       uses: actions-rs/toolchain@v1
       with: 
