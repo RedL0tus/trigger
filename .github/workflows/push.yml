@@ -2,8 +2,8 @@ name: Release binaries
 
 on:
   push:
-    branches: 
-      - refs/tags/*
+    tags:
+    - 'v*'
 
 jobs:
   job_create-release:
