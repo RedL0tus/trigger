@@ -3,7 +3,7 @@ name: Release binaries
 on:
   push:
     tags:
-    - 'v*'
+    - '*'
 
 jobs:
   job_build-linux-x86_64: # Build binary for linux and create release
@@ -11,7 +11,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Create release
-      id: create-release
+      id: release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -23,40 +23,40 @@ jobs:
         draft: false
         prerelease: false
     - name: Install linux-x86_64 toolchains
-      uses: actions-rs/toolchain@v1
-      with: 
-        toolcahin: nightly 
-        target: x86_64-unknown-linux-musl 
+      uses: actions-rs/toolchain@v1.0.3
+      with:
+        toolchain: nightly
+        target: x86_64-unknown-linux-musl
         override: true
     - name: Build linux-x86_64 binary
       run: "cargo build --target x86_64-unknown-linux-musl --release"
     - name: Move linux-x86_64 binary
       run: "mv target/x86_64-unknown-linux-musl/release/trigger trigger-linux-x86_64"
     - name: Upload linux-x86_64 binary
-      uses: actions/upload-release-asset@v1
+      uses: actions/upload-release-asset@v1.0.1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.create-release.outputs.upload_url }}
+        upload_url: ${{ steps.release.outputs.upload_url }}
         asset_path: ./trigger-linux-x86_64
         asset_name: trigger-linux-x86_64
         asset_content_type: application/octet-stream
     - name: Install linux-i686 toolchains
-      uses: actions-rs/toolchain@v1
-      with: 
-        toolcahin: nightly 
-        target: i686-unknown-linux-musl 
+      uses: actions-rs/toolchain@v1.0.3
+      with:
+        toolchain: nightly
+        target: i686-unknown-linux-musl
         override: true
     - name: Build linux-i686 binary
       run: "cargo build --target i686-unknown-linux-musl --release"
     - name: Move linux-i686 binary
       run: "mv target/i686-unknown-linux-musl/release/trigger trigger-linux-i686"
     - name: Upload linux-i686 binary
-      uses: actions/upload-release-asset@v1
+      uses: actions/upload-release-asset@v1.0.1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.create-release.outputs.upload_url }}
+        upload_url: ${{ steps.release.outputs.upload_url }}
         asset_path: ./trigger-linux-i686
         asset_name: trigger-linux-i686
         asset_content_type: application/octet-stream
