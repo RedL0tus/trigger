@@ -72,7 +72,7 @@ events:
  - Secret is not required, but it's strongly recommended.
  - Commands in `events.common` will be executed before the actual event.
  - Commands in `events.all` will be executed after receiving any valid request.
- - All available events are listed [here (GitHub)](https://developer.github.com/webhooks/#events) and [here (GitLab)](https://docs.gitlab.com/ee/user/project/integrations/webhooks.html#events).
+ - All available events are listed [here (GitHub)](https://developer.github.com/webhooks/event-payloads/) and [here (GitLab)](https://docs.gitlab.com/ee/user/project/integrations/webhooks.html#events).
    - Note: Events from GitLab need to be reformatted as replacing `" "`(whitespaces) with `"_"`(underscore) and make sure it's in lower case.
      - e.g. `Push Hook` in GitLab's documentation will be `push_hook` in trigger's configuration.
  - Commands in `events.else` will be executed when no matching event defined.
