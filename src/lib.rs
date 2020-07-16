@@ -162,7 +162,7 @@ impl HookFunc for Handler {
 }
 
 /// Start the server from given config file path
-pub fn start(config_filename: &str) -> Result<(), Box<Error>> {
+pub fn start(config_filename: &str) -> Result<(), Box<dyn Error>> {
     debug!("Setting up...");
 
     // Read config (from `trigger.yaml`)
