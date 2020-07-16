@@ -145,9 +145,15 @@ impl HookFunc for Handler {
                 debug!("Executor option: {:#?}", &options);
                 let args = vec![];
                 thread::spawn(move || {
-                    run_script::run(&exec.as_str(), &args, &options)
+                    let (code, output, error) = run_script::run(&exec.as_str(), &args, &options)
                         .expect("Failed to execute command");
-                    info!("Commands in \"{}\" section exited", &section_name);
+                    info!("Commands in \"{}\" section exited with code {}", &section_name, code);
+                    if options.capture_output {
+                        debug!("stdout:\n{}", output);
+                        debug!("stderr:\n{}", error);
+                    } else {
+                        debug!("Output not captured.");
+                    }
                 });
             }
         }

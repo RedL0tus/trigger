@@ -3,14 +3,14 @@
 settings:
   host: 0.0.0.0:4567
   secret: "secret"
-  print_commands: false
+  print_commands: true
   capture_output: false
   exit_on_error: true
 
 events:
   common: |
     set -e;
-    PAYLOAD='{payload}';
+    PAYLOAD='{payload}'
     function get_prop {
       echo $(echo ${PAYLOAD} | jq $1 | tr -d '"');
     }
