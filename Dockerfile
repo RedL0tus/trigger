@@ -2,7 +2,7 @@ FROM alpine:latest
 RUN apk update --no-cache
 RUN apk add --no-cache curl jq
 
-ENV TRIGGER_VERSION 1.1.1
+ENV TRIGGER_VERSION 1.1.2
 ENV TRIGGER_PORT 4567
 
 EXPOSE $TRIGGER_POSTS

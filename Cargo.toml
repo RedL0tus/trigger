@@ -1,6 +1,6 @@
 [package]
 name = "trigger"
-version = "1.1.1"
+version = "1.1.2"
 authors = ["Kay Lin <i@v2bv.net>"]
 description = "Yet another GitHub/GitLab Webhook listener"
 homepage = "https://github.com/RedL0tus/trigger"
