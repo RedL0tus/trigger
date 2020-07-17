@@ -34,6 +34,13 @@ Start the program
 trigger --config "<path to config file>"
 ```
 
+Or, start trigger with debug log enabled:  
+```bash
+TRIGGER_LOG=debug trigger --config "<path to config file>"
+```
+
+`debug` can be replaced with any other logging level you like (including `error`, `warn`, `info`, `debug`, `trace`).
+
 Configuration
 -------------
 

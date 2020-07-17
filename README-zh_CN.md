@@ -53,6 +53,13 @@ OPTIONS:
 trigger --config "<配置文件的路径>"
 ```
 
+或者启用 debug 日志：
+```bash
+TRIGGER_LOG=debug trigger --config "<配置文件的路径>"
+```
+
+此处的 debug 可以换成任意你想要的 log level（有 error、warn、info、debug、trace）。
+
 配置
 ----
 
